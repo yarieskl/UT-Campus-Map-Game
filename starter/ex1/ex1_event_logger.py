@@ -51,9 +51,9 @@ class Event:
 
     id_num: int
     description: str
-    next_command: str
-    next: Event
-    prev: Event
+    next_command: Optional[str] = None
+    next: Optional[Event] = None
+    prev: Optional[Event] = None
 
 
 class EventList:
