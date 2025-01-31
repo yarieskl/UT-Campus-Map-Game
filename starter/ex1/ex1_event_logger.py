@@ -51,9 +51,9 @@ class Event:
 
     id_num: int
     description: str
-    next_command: Optional[str] = None
-    next: Optional[Event] = None
-    prev: Optional[Event] = None
+    next_command: str
+    next: Event
+    prev: Event
 
 
 class EventList:
@@ -65,8 +65,6 @@ class EventList:
         - last: Pointing to the last event in the event list
 
     Representation Invariants:
-        - If the list is empty, both first and last must be None.
-        - If the list has at least one event, first.prev must be None and last.next must be None.
         - # TODO add any appropriate representation invariants, if needed
     """
     first: Optional[Event]
@@ -90,7 +88,6 @@ class EventList:
     def is_empty(self) -> bool:
         """Return whether this event list is empty."""
 
-        # TODO
         return self.first is None
 
     def add_event(self, event: Event, command: Optional[str] = None) -> None:
@@ -101,15 +98,6 @@ class EventList:
         # Hint: You should update the previous node's <next_command> as needed
 
         # TODO: Your code below
-        if self.is_empty():
-            self.first = self.last
-            self.last = event
-        else:
-            event.prev = self.last
-            if self.last:
-                self.last.next_command = command
-                self.last.next = event
-            self.last = event
 
     def remove_last_event(self) -> None:
         """Remove the last event from this event list.
@@ -118,27 +106,11 @@ class EventList:
         # Hint: The <next_command> and <next> attributes for the new last event should be updated as needed
 
         # TODO: Your code below
-        if self.is_empty():
-            return None
-
-        if self.first == self.last:
-            self.first = self.last = None
-        else:
-            self.last = self.last.prev
-            if self.last:
-                self.last.next = None
-                self.last.next_command = None
 
     def get_id_log(self) -> list[int]:
         """Return a list of all location IDs visited for each event in this list, in sequence."""
 
         # TODO: Your code below
-        ids = []
-        curr = self.first
-        while curr:
-            ids.append(curr.id_num)
-            curr = curr.next
-        return ids
 
     # Note: You may add other methods to this class as needed but DO NOT CHANGE THE SPECIFICATION OF ANY OF THE ABOVE
 
