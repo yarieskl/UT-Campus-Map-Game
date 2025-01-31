@@ -97,6 +97,9 @@ class SimpleAdventureGame:
         """
 
         # TODO: Complete this method as specified. Do not modify any of this function's specifications.
+        if loc_id is None:
+            loc_id = self.current_location_id
+        return self._locations[loc_id]
 
 
 class AdventureGameSimulation:
@@ -119,9 +122,13 @@ class AdventureGameSimulation:
         self._game = SimpleAdventureGame(game_data_file, initial_location_id)
 
         # TODO: Add first event (initial location, no previous command)
+        initial_location = self._game.get_location()
         # Hint: self._game.get_location() gives you back the current location
 
         # TODO: Generate the remaining events based on the commands and initial location
+        first_event = Event(initial_location.id_num, initial_location.description, None, None, None)
+        self._events.add_event(first_event)
+        self.generate_events(commands, initial_location)
         # Hint: Call self.generate_events with the appropriate arguments
 
     def generate_events(self, commands: list[str], current_location: Location) -> None:
@@ -134,6 +141,11 @@ class AdventureGameSimulation:
 
         # TODO: Complete this method as specified. For each command, generate the event and add
         #  it to self._events.
+        for command in commands:
+            next_location_id = current_location.available_commands[command]
+            next_location = self._game.get_location(next_location_id)
+            self._events.add_event(Event(next_location.id_num, next_location.description, command))
+            current_location = next_location
         # Hint: current_location.available_commands[command] will return the next location ID
         # which executing <command> while in <current_location_id> leads to
 
