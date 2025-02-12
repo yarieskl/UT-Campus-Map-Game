@@ -43,12 +43,17 @@ class Event:
     """
 
     # NOTES:
-    # This is proj1_event_logger (separate from the ex1 file). In this file, you may add new attributes/methods,
-    # or modify the names or types of provided attributes/methods, as needed for your game.
+    # Complete this class EXACTLY as specified, with ALL of the above attributes.
+    # Do NOT add any new attributes, or modify the names or types of the above attributes.
     # If you want to create a special type of Event for your game that requires a different
-    # set of attributes, you can create new classes using inheritance, as well.
+    # set of attributes, you can do that separately in the project1 folder. This class is part of
+    # Exercise 1 and will be auto-graded.
 
-    # TODO: Add attributes below based on the provided descriptions above.
+    id_num: int
+    description: str
+    next_command: Optional[str] = None
+    next: Optional[Event] = None
+    prev: Optional[Event] = None
 
 
 class EventList:
@@ -56,10 +61,12 @@ class EventList:
     A linked list of game events.
 
     Instance Attributes:
-        - # TODO add descriptions of instance attributes here
+        - first: Pointing to the first event in the event list
+        - last: Pointing to the last event in the event list
 
     Representation Invariants:
-        - # TODO add any appropriate representation invariants, if needed
+        - self.first.prev is None
+        - self.last.next is None
     """
     first: Optional[Event]
     last: Optional[Event]
@@ -77,35 +84,60 @@ class EventList:
             print(f"Location: {curr.id_num}, Command: {curr.next_command}")
             curr = curr.next
 
-    # TODO: Complete the methods below, based on the given descriptions.
     def is_empty(self) -> bool:
         """Return whether this event list is empty."""
 
-        # TODO: Your code below
+        return self.first is None
 
-    def add_event(self, event: Event, command: str = None) -> None:
+    def add_event(self, event: Event, command: Optional[str] = None) -> None:
         """Add the given new event to the end of this event list.
         The given command is the command which was used to reach this new event, or None if this is the first
         event in the game.
         """
         # Hint: You should update the previous node's <next_command> as needed
 
-        # TODO: Your code below
+        if self.is_empty():
+            self.first = event
+            self.last = event
+        else:
+            self.last.next, event.prev, self.last = event, self.last, event
+            self.last.prev.next_command = command
 
     def remove_last_event(self) -> None:
         """Remove the last event from this event list.
         If the list is empty, do nothing."""
 
         # Hint: The <next_command> and <next> attributes for the new last event should be updated as needed
-
-        # TODO: Your code below
+        if self.is_empty():
+            return None
+        elif self.first == self.last:
+            self.first = None
+            self.last = None
+        else:
+            assert not self.is_empty() and self.first != self.last
+            self.last = self.last.prev
+            self.last.next = None
+            self.last.next_command = None
 
     def get_id_log(self) -> list[int]:
         """Return a list of all location IDs visited for each event in this list, in sequence."""
 
-        # TODO: Your code below
+        curr = self.first
+        ids = []
+        while curr is not None:
+            ids.append(curr.id_num)
+            curr = curr.next
+        return ids
 
-    # Note: You may add other methods to this class as needed
+    # Note: You may add other methods to this class as needed but DO NOT CHANGE THE SPECIFICATION OF ANY OF THE ABOVE
+    def __len__(self) -> int:
+        """Return the number of events in the event list"""
+        curr = self.first
+        len = 0
+        while curr is not None:
+            len += 1
+            curr = curr.next
+        return len
 
 
 if __name__ == "__main__":

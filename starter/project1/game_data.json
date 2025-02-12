@@ -1,24 +1,193 @@
 {
-  "locations": [
+  "locations" : [
     {
-      "id": 1,
-      "name": "Bahen 1F",
-      "brief_description": "You are on the first floor of the Bahen Center. There are elevators to the West, and an exit from the building to St. George street to the East. You see something shiny on the ground -- looks like a toonie?",
-      "long_description": "You are on the first floor of the Bahen Center. It's usually crowded at this time of the day, but today it's eerily quiet. Only a few students are studying at the table near the doors. You better not disturb them. One student is rushing down the corridor, wearing a heavy-looking backpack and carrying a textbook in their arms. There are elevators to the West, and an exit from the building to St. George street to the East.",
-      "available_commands": {
-        "go south": 4,
-        "go east": 2
+      "id" : 1,
+      "name" : "Bahen 1F",
+      "brief_description" : "You are on the first floor of the Bahen Center. There is an elevator going up to CSSU Room, and ways to UT Bookstore, \nRobarts Library, Morrison Hall and Chestnut Residence. You see something shiny on the ground -- looks like a toonie?",
+      "long_description" : "You are on the first floor of the Bahen Center. It's usually crowded at this time of the day, but today it's eerily quiet. \nOnly a few students are studying at the table near the doors. You better not disturb them. One student is rushing down the corridor, \nwearing a heavy-looking backpack and carrying a textbook in their arms. There is an elevator going up to CSSU Room, and ways to UT Bookstore, \nRobarts Library, Morrison Hall and Chestnut Residence.",
+      "available_commands" :
+      {
+        "go upstairs to cssu room" : 8,
+        "go north to robarts library" : 6,
+        "go northeast to morrison hall" : 5,
+        "go south to ut bookstore" : 2,
+        "go southeast chestnut residence": 3
       },
-      "items": ["toonie"]
+      "items" :
+      ["toonie"],
+      "move_index": 5,
+      "bonus_move_index": 2
+    },
+    {
+      "id" : 8,
+      "name" : "CSSU Room",
+      "brief_description" : "You are on the second floor of the Bahen Center. There is an elevator to the first floor, and look to the left, you see a mysterious room \n–- is that CSSU, a magical place for desperate CS students?",
+      "long_description" : "",
+      "available_commands" :
+      {
+        "go downstairs" : 1,
+        "check the products on the shelves" : 31
+      },
+      "items" :
+      [
+        "redbull"
+      ],
+      "move_index": 5,
+      "bonus_move_index": 0
+    },
+    {
+      "id" : 3,
+      "name" : "Chestnut Residence",
+      "brief_description" : "You are in the Chestnut Residence and you meet up with your study partner Park, he might know where is your lucky mug is. \nOr you are not in a good mood in a conversation, you can choose to leave. There are ways to UT Bookstore, Morrison Hall, \nBahen Center and Gerstein Center",
+      "long_description" : "You are in the Chestnut Residence, a place you have only been once. The unfamiliar environment makes you feel a little bit nervous. \nThe place is also quit and with only sound of students playing pool, you feel a little bit better. Suddenly, \nyou see your study partner Park, it might be a good idea to talk to him... There are also ways towards west -- to UT Bookstore, \ntowards North -- to Gerstein Centre, towards northwest --  to Bahen Center and ways towards Morrison Hall, in the Northwest.",
+      "available_commands" :
+      {
+        "go west to ut bookstore" : 2,
+        "go north to gerstein center" : 4,
+        "go northwest to morrison hall" : 5,
+        "go northwest to bahen center" : 1,
+        "talk to park" : 11
+      },
+      "items" : ["lucky mug"],
+      "move_index": 17,
+      "bonus_move_index": 0
+    },
+    {
+      "id" : 5,
+      "name" : "Morrison Hall Lobby",
+      "brief_description" : "You are in the Morrison Hall. There are ways to your room, or you can leave the building. \nThere are ways along the St. George Street to Robarts Library to northwest, to Bahen Center to southwest, way to Gerstein from UC, \nand also way to direcly go to Chestnut residence.",
+      "long_description" : "You are in the Morrisno Hall, the place you have been living for the last couples of months, \nit is not sun set yet, the sunlight shines through the window and splashes on the ground, but you don't have the time to stop and appreciate the scene, \nyou are still carrying a heavy task on your shoulder. Maybe you want to go to your room or you think you might leave the building to do some actual work. \nThere are ways along the St. George Street to Robarts Library to northwest, to Bahen Center to southwest, way to Gerstein from UC and also way to Chestnut residence.",
+      "available_commands" :
+      {
+        "go upstairs to your room" : 7,
+        "go northwest to robarts library (2 min)" : 6,
+        "go southwest to bahen center (3 min)" : 1,
+        "go east to gerstein center (3 min)" : 4,
+        "go southeast to chestnut residence (12 min)": 3
+      },
+      "items" : [],
+      "move_index": 2,
+      "bonus_move_index": 3
+    },
+    {
+      "id" : 7,
+      "name" : "Your Room",
+      "brief_description" : "You are in your room. You see your wallet and tcard lying on the table, besides your died laptop. \nYou can leave the room whenever you want.",
+      "long_description" : "You are in your room, the cozy and comfortable place only belongs to your own. \nYou look at the bed, maybe it is not a good time to have a nap now... Your wallet and laptop are on the table, you cross your fingers, \nhoping there is some money in the wallet, so you can buy some drink for tonight. \nThis is your place, you can stay or leave at whenever you want.",
+      "available_commands" :
+      {
+        "leave the room to morrison hall lobby" : 5,
+        "pick up your wallet": 33,
+        "pick up your tcard" : 34
+      },
+      "items" : ["wallet", "laptop", "tcard"],
+      "move_index": 2,
+      "bonus_move_index": 0
+    },
+    {
+      "id" : 2,
+      "name" : "UT Bookstore",
+      "brief_description" : "You are in the UT Bookstore. You can walk around and check what things to buy. There is an \nexit leading to Bahen Center(2 min) and Chestnut Residence(10 min).",
+      "long_description" : "You are in the UT Bookstore. With all kinds of UT-theme clothes on the hangers, it will be \ndelightful to stop by and try them on. A few students passed by you, with textbooks they bought, \nand hurried out of the store. They remind you of your project, it's time to do what you are supposed to do. \nYou can go around to check what you can buy, or there is an exit leading to Bahen Center(2 min) and Chestnut Residence(10 min).",
+      "available_commands" :
+      {
+        "go north to bahen center" : 1,
+        "go southeast chestnut residence": 3,
+        "check products in the store": 32
+      },
+      "items" :
+      ["redbull", "new laptop charger", "owo collab ut jacket", "rururemon collbab ut hoodie", "classic ut white hoodie"],
+      "move_index": 7,
+      "bonus_move_index": 0
+    },
+    {
+      "id" : 6,
+      "name" : "Robarts Library",
+      "brief_description" : "You are in the Robarts Library. You can walk around and check what things to buy. There is an \nexit leading to Bahen Center(2 min) and Chestnut Residence(10 min).",
+      "long_description" : "You arr in the Robarts Library. With all kinds of UT-theme clothes on the hangers, it will be \ndelightful to stop by and try them on. A few students passed by you, with textbooks they bought, \nand hurried out of the store. They remind you of your project, it's time to do what you are supposed to do. \nYou can go around to check what you can buy, or there is an exit leading to Bahen Center(2 min) and Chestnut Residence(10 min).",
+      "available_commands" :
+      {
+        "go south to bahen center" : 1,
+        "go southeast morrison hall": 5
+      },
+      "items" :
+      ["redbull"],
+      "move_index": 0,
+      "bonus_move_index": 0
+    },
+    {
+      "id" : 4,
+      "name" : "Gerstein Center",
+      "brief_description" : "You are in the Gerstein Center. You can walk around and check what things to buy. There is an \nexit leading to Bahen Center(2 min) and Chestnut Residence(10 min).",
+      "long_description" : "You arr in the Gerstein Center. With all kinds of UT-theme clothes on the hangers, it will be \ndelightful to stop by and try them on. A few students passed by you, with textbooks they bought, \nand hurried out of the store. They remind you of your project, it's time to do what you are supposed to do. \nYou can go around to check what you can buy, or there is an exit leading to Bahen Center(2 min) and Chestnut Residence(10 min).",
+      "available_commands" :
+      {
+        "go west to morrison hall" : 5,
+        "go south to chestnut residence": 3,
+        "talk to the librarian" : 12
+      },
+      "items" :
+      ["laptop charger"],
+      "move_index": 5,
+      "bonus_move_index": 3
     }
   ],
-  "items": [
+  "items" : [
     {
-      "name": "toonie",
-      "description": "There is a toonie on the ground. Someone must have dropped it.",
-      "start_position": 1,
-      "target_position": 4,
-      "target_points": 5
+      "name" : "toonie",
+      "description" : "There is a toonie on the ground. Someone must have dropped it.",
+      "start_position" : 1,
+      "target_position" : 4,
+      "target_points" : 5
+    },
+    {
+      "name" : "redbull",
+      "description": "There are bunches of energy drinks in the fridge, labled $1 for each",
+      "start_position": 0,
+      "target_position" : 0,
+      "target_points" : 0
+    },
+    {
+      "name" : "wallet",
+      "description" : "That is your wallet, you checked the money and found $100; bring it with you might be a good idea.",
+      "start_position" : 51,
+      "target_position" : 0,
+      "target_points" : 10
+    },
+    {
+      "name" : "new laptop charger",
+      "description" : "Hurrayyy! You found the charger that mathces your laptop! Hurry up to buy it and finish your project.",
+      "start_position" : 2,
+      "target_position" : 5,
+      "target_points" : 10
+    },
+    {
+      "name" : "laptop charger",
+      "description" : "Finally, you find your laptop charger, your life safer.",
+      "start_position" : 4,
+      "target_position" : 5,
+      "target_points" : 10
+    },
+    {
+      "name" : "lucky mug",
+      "description" : "The mug that has made company with you through many nights, you will need it for your this project as well.",
+      "start_position" : 3,
+      "target_position" : 5,
+      "target_points" : 15
+    },
+    {
+      "name" : "tcard",
+      "description" : "Your tcard, nothing much to say about it",
+      "start_position" : 7,
+      "target_position" : 0,
+      "target_points" : 2
+    },
+    {
+      "name" : "usb driver",
+      "description" : "Yout most important file is stored here, if you lose it again, you will be cooked",
+      "start_position" : 0,
+      "target_position" : 0,
+      "target_points" : 20
     }
   ]
 }
