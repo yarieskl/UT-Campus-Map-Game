@@ -64,8 +64,6 @@ class AdventureGameSimulation:
         - all commands in the given list are valid commands at each associated location in the game
         """
 
-        # TODO: Complete this method as specified. For each command, generate the event and add
-        #  it to self._events.
         # Hint: current_location.available_commands[command] will return the next location ID
         # which executing <command> while in <current_location_id> leads to
         for command in commands:
@@ -119,12 +117,11 @@ if __name__ == "__main__":
         'disable': ['R1705', 'E9998', 'E9999']
     })
 
-    # TODO: Modify the code below to provide a walkthrough of commands needed to win and lose the game
     win_walkthrough = [
-        'KJ', 'go north to robarts library', 'check items in the lost and found box', '1', '1', '0', 'go south to bahen'
-                                                                                                     'center',
-        'go south to ut bookstore', '2', '1', '0', 'go southeast to chestnut residence', 'talk to park', 'a', 'a',
-        '3', 'go northwest to morrison hall', 'go upstairs to your room'
+        'KJ', 'go north to robarts library (5 min)', 'check items in the lost and found box', '1', '1', '0',
+        'go south to bahen center (5 min)',
+        'go south to ut bookstore (2 min)', '2', '1', '0', 'go southeast to chestnut residence (10 min)', 'talk to park'
+        , 'a', 'a', '3', 'go northwest to morrison hall (12 min)', 'go upstairs to your room (0 min)'
 
     ]  # Create a list of all the commands needed to walk through your game to win it
     expected_log = [1, 6, 6, 1, 2, 2, 3, 3, 5, 7]  # Update this log list to include the IDs of all locations that
@@ -134,27 +131,27 @@ if __name__ == "__main__":
 
     # Create a list of all the commands needed to walk through your game to reach a 'game over' state
     lose_demo = [
-        'KJ', 'go north to robarts library', 'go south to bahen center', 'go southeast to chestnut residence',
-        'go north to gerstein center', 'go west to morrison hall', 'go southeast to chestnut residence (12 min)'
+        'KJ', 'go north to robarts library (5 min)', 'go south to bahen center (5 min)', 'go southeast to chestnut '
+                                                                                         'residence (10 min)',
+        'go north to gerstein center (9 min)', 'go west to morrison hall (3 min)', 'go southeast to chestnut '
+                                                                                   'residence (12 min)'
     ]
     expected_log = [1, 6, 1, 3, 4, 5]  # Update this log list to include the IDs of all locations that would be visited
     # Uncomment the line below to test your demo
     assert expected_log == AdventureGameSimulation('game_data.json', 1, lose_demo)
 
-    # TODO: Add code below to provide walkthroughs that show off certain features of the game
-    # TODO: Create a list of commands involving visiting locations, picking up items, and then
-    #   checking the inventory, your list must include the "inventory" command at least once
-    inventory_demo = ['KJ', 'go north to robarts library', 'check items in the lost and found box', '1', '1', '0',
-                      "inventory"]
+    inventory_demo = ['KJ', 'go north to robarts library (5 min)', 'check items in the lost and found box', '1', '1',
+                      '0',"inventory"]
     expected_log = [1, 6, 6, 6]
     assert expected_log == AdventureGameSimulation('game_data.json', 1, inventory_demo).get_id_log()
 
-    scores_demo = ['KJ', 'go north to robarts library', 'check items in the lost and found box', '1', '1', '0', "score"]
+    scores_demo = ['KJ', 'go north to robarts library (5 min)', 'check items in the lost and found box', '1', '1', '0',
+                   "score"]
     expected_log = [1, 6, 6, 6]
     assert expected_log == AdventureGameSimulation('game_data.json', 1, scores_demo).get_id_log()
 
     # Add more enhancement_demos if you have more enhancements
-    enhancement1_demo = ['KJ', 'go southeast to chestnut residence',
+    enhancement1_demo = ['KJ', 'go southeast to chestnut residence (10 min)',
                          'talk to park', 'a', 'a',
                          '1', '1', '1', 'n', 'talk to park', 'b', 'b', '1', '1', '1', 'y', '1', '3', 'inventory',
                          'score']

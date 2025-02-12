@@ -44,7 +44,7 @@ class AdventureGame:
         - moves_left: showing how many moves are left in the current location
 
     Representation Invariants:
-        - # TODO add any appropriate representation invariants as needed
+
     """
 
     # Private Instance Attributes (do NOT remove these two attributes):
@@ -102,7 +102,6 @@ class AdventureGame:
             locations[loc_data['id']] = location_obj
 
         items = []
-        # TODO: Add Item objects to the items list; your code should be structured similarly to the loop above
         # YOUR CODE BELOW
         for items_data in data['items']:
             item_obj = Item(items_data['name'], items_data['description'], items_data['start_position'],
@@ -116,14 +115,13 @@ class AdventureGame:
         If no ID is provided, return the Location object associated with the current location.
         """
 
-        # TODO: Complete this method as specified
         # YOUR CODE BELOW
         if loc_id is None:
             return self._locations[self.current_location_id]
         else:
             return self._locations[loc_id]
 
-    def save_state(self, player_f: Player):
+    def save_state(self, player_f: Player) -> None:
         """Save the current state of the game before making changes."""
         state_snapshot = {
             'location': self.current_location_id,
@@ -154,11 +152,12 @@ class AdventureGame:
 
         print("Undo successful! Returned to the previous state.")
 
-    def get_item(self, item_to_get: str) -> Item:
+    def get_item(self, item_to_get: str) -> Optional[Item]:
         """Return the item that has the same name"""
         for i in self._items:
             if i.name == item_to_get:
                 return i
+        return None
 
     def equip(self, player_f: Player, item_name: str) -> None:
         """Add selected item to player's inventory"""
@@ -193,22 +192,48 @@ class AdventureGame:
     def move_left(self, prev_id: int) -> None:
         """Return the number of moves left"""
         if result == 3:
-            move = (abs(self.get_location(result).move_index - self.get_location(prev_id).move_index) -
-                    self.get_location(prev_id).bonus_move_index)
+            move = (abs(self.get_location(result).move_index - self.get_location(prev_id).move_index)
+                    - self.get_location(prev_id).bonus_move_index)
         elif self.current_location_id == 3 and choice in [1, 4, 5]:
-            move = (abs(self.get_location(result).move_index - self.get_location(prev_id).move_index) -
-                    game.get_location(result).bonus_move_index)
+            move = (abs(self.get_location(result).move_index - self.get_location(prev_id).move_index)
+                    - game.get_location(result).bonus_move_index)
         else:
             move = (abs(self.get_location(result).move_index - self.get_location(prev_id).move_index))
         self.moves_left -= move
 
-    def check_win(self, player: Player) -> bool:
+    def check_win(self, player_f: Player) -> bool:
         """Check if the player satisfies the condition to win"""
         essentials = [self._items[5], self._items[7]]
-        if (self._items[3] in player.inventory or self._items[4] in player.inventory) and all(
-                item in player.inventory for item in essentials):
+        if (self._items[3] in player_f.inventory or self._items[4] in player_f.inventory) and all(
+                item in player_f.inventory for item in essentials):
             return True
         return False
+
+    def drop_item(self, player_f: Player, item_name: str) -> None:
+        """
+        Drops an item from the player's inventory and places it in the current location.
+
+        - `player`: The player who is dropping the item.
+        - `item_name`: The name of the item to drop.
+
+        If the item is in the inventory, it is removed and added to the current location.
+        """
+        # Check if the item is in the player's inventory
+        item = next((i for i in player_f.inventory if i.name == item_name), None)
+
+        if item:
+            self.save_state(player_f)  # Save state before making changes
+
+            # Remove the item from the player's inventory
+            player_f.inventory.remove(item)
+
+            # Add the item to the current location
+            current_location = self.get_location()
+            current_location.items.append(item.name)
+
+            print(f"You dropped {item_name} at {current_location.brief_description}.")
+        else:
+            print(f"You don't have {item_name} in your inventory.")
 
     # cite from ChatGPT
     def park_puzzle(self, image_path: str, correct_answer: str) -> int:
@@ -221,12 +246,12 @@ class AdventureGame:
 
         def check_answer() -> None:
             """Check the user's answer and update the result."""
-            nonlocal attempts
+            nonlocal attempts, puzzle_result  # ✅ Declare puzzle_result as a local variable
             user_answer = entry.get().strip().lower()
 
             if user_answer == correct_answer.lower().strip():
                 messagebox.showinfo("Correct!", "You solved the puzzle!")
-                self.puzzle_result = 1
+                puzzle_result = 1  # ✅ Modify the local variable instead of `self.puzzle_result`
                 root.destroy()  # Close the GUI properly
             else:
                 attempts -= 1
@@ -234,7 +259,7 @@ class AdventureGame:
 
                 if attempts == 0:
                     messagebox.showerror("Game Over", "You've used all your attempts!")
-                    self.puzzle_result = 0
+                    puzzle_result = 0  # ✅ Modify the local variable
                     root.destroy()  # Close the GUI properly
                 else:
                     messagebox.showwarning("Wrong!", "Try again!")
@@ -242,16 +267,18 @@ class AdventureGame:
         # Use `tk.Toplevel()` instead of `tk.Tk()` if another window already exists
         root = tk.Tk() if not hasattr(self, 'main_window') else tk.Toplevel()
         root.title("Puzzle Challenge")
-        self.puzzle_result = None  # Reset before each puzzle
+
+        puzzle_result = None  # ✅ Local variable to track the result (not part of the class)
+        attempts = 3  # Number of attempts
 
         # Load and display image properly
         image = Image.open(image_path)
         image = image.resize((1280, 123))  # Resize if needed
-        self.photo_reference = ImageTk.PhotoImage(image)  # Store reference
+        photo_reference = ImageTk.PhotoImage(image)  # ✅ Local variable (not self.photo_reference)
 
         # Keep reference to avoid garbage collection
-        image_label = tk.Label(root, image=self.photo_reference)
-        image_label.image = self.photo_reference  # Attach reference explicitly
+        image_label = tk.Label(root, image=photo_reference)
+        image_label.image = photo_reference  # Attach reference explicitly
         image_label.pack()
 
         # Instruction Label
@@ -267,7 +294,6 @@ class AdventureGame:
         submit_button.pack()
 
         # Attempts Left Label
-        attempts = 3
         attempts_label = tk.Label(root, text=f"Attempts Left: {attempts}")
         attempts_label.pack()
 
@@ -275,7 +301,7 @@ class AdventureGame:
         root.mainloop()
 
         # Ensure an integer is always returned
-        return self.puzzle_result if self.puzzle_result is not None else 0
+        return puzzle_result if puzzle_result is not None else 0  # ✅ Returns local variable
 
     def park_conversation(self, player_f: Player, image_path: str) -> int:
         """The function for interactions with Park"""
@@ -346,12 +372,12 @@ if __name__ == "__main__":
     # When you are ready to check your work with python_ta, uncomment the following lines.
     # (Delete the "#" and space before each line.)
     # IMPORTANT: keep this code indented inside the "if __name__ == '__main__'" block
-    import python_ta
-
-    python_ta.check_all(config={
-        'max-line-length': 120,
-        'disable': ['R1705', 'E9998', 'E9999']
-    })
+    # import python_ta
+    #
+    # python_ta.check_all(config={
+    #     'max-line-length': 120,
+    #     'disable': ['R1705', 'E9998', 'E9999']
+    # })
 
     LOCATION_INDEX = 10
     INTER_ITEM_INDEX = 20
@@ -369,6 +395,7 @@ if __name__ == "__main__":
         # Note: If the loop body is getting too long, you should split the body up into helper functions
         # for better organization. Part of your marks will be based on how well-organized your code is.
         # initialise player variable
+        player = Player('default_user')
         if not register:
             print('Welcome to our word adventure game!\n')
             name = input('Please enter your name: ').strip()
@@ -378,14 +405,10 @@ if __name__ == "__main__":
 
         location = game.get_location()
 
-        # TODO: Add new Event to game log to represent current game location
-        #  Note that the <choice> variable should be the command which led to this event
         # YOUR CODE HERE
         new_event = Event(location.id_num, location.long_description)
         game_log.add_event(new_event, choice)
 
-        # TODO: Depending on whether or not it's been visited before,
-        #  print either full description (first time visit) or brief description (every subsequent visit) of location
         # YOUR CODE HERE
         if location.visited:
             print(location.brief_description)
@@ -410,7 +433,6 @@ if __name__ == "__main__":
         print("You decided to:", choice)
 
         if choice in menu:
-            # TODO: Handle each menu command as appropriate
             # Note: For the "undo" command, remember to manipulate the game_log event list to keep it up-to-date
             if choice == "log":
                 game_log.display_events()
@@ -420,6 +442,10 @@ if __name__ == "__main__":
                 print('========')
             elif choice == 'inventory':
                 print('Your have ', [items.name for items in player.inventory])
+                drop_or_not = input('Enter the name of item you want to drop at this location(enter 0 if nothing to '
+                                    'drop): ').lower().strip()
+                if drop_or_not != '0':
+                    game.drop_item(player, drop_or_not)
             elif choice == 'score':
                 print("Your current score is: ", player.score)
                 print("========")
@@ -433,8 +459,6 @@ if __name__ == "__main__":
             # Handle non-menu actions
             result = location.available_commands[choice]
 
-            # TODO: Add in code to deal with actions which do not change the location (e.g. taking or using an item)
-            # TODO: Add in code to deal with special locations (e.g. puzzles) as needed for your game
             if result <= 10:
                 if result == 7:
                     if game.check_win(player):
@@ -452,7 +476,7 @@ if __name__ == "__main__":
                     game.save_state(player)
                     path: str = ('/Users/yaires/Documents/University Of Toronto/2025 '
                                  'Winter/csc111/assignments/starter/project1/Euclid_Pic.png')
-                    get_mug = game.park_conversation(player)
+                    get_mug = game.park_conversation(player, path)
                     if get_mug == 1:
                         game.equip(player, 'lucky mug')
                         player.park_status = True
