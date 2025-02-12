@@ -55,8 +55,6 @@ class AdventureGame:
 
     _locations: dict[int, Location]
     _items: list[Item]
-    _pic_path: str = ('/Users/yaires/Documents/University Of Toronto/2025 '
-                      'Winter/csc111/assignments/starter/project1/Euclid_Pic.png')
     _history: list[dict[str, Any]]
     current_location_id: int  # Suggested attribute, can be removed
     moves_left: int = 40
@@ -125,19 +123,19 @@ class AdventureGame:
         else:
             return self._locations[loc_id]
 
-    def save_state(self, player: Player):
+    def save_state(self, player_f: Player):
         """Save the current state of the game before making changes."""
         state_snapshot = {
             'location': self.current_location_id,
-            'inventory': player.inventory.copy(),  # Copy inventory to avoid reference issues
-            'score': player.score,
+            'inventory': player_f.inventory.copy(),  # Copy inventory to avoid reference issues
+            'score': player_f.score,
             'moves_left': self.moves_left,
-            'park_status': player.park_status,
+            'park_status': player_f.park_status,
             'loc_items': self.get_location().items.copy()
         }
         self._history.append(state_snapshot)
 
-    def undo(self, player: Player) -> None:
+    def undo(self, player_f: Player) -> None:
         """Undo command in the game."""
         if not self._history:
             print("Nothing to undo!")
@@ -148,10 +146,10 @@ class AdventureGame:
 
         # Restore game state
         self.current_location_id = last_state['location']
-        player.inventory = last_state['inventory']
-        player.score = last_state['score']
+        player_f.inventory = last_state['inventory']
+        player_f.score = last_state['score']
         self.moves_left = last_state['moves_left']
-        player.park_status = last_state['park_status']
+        player_f.park_status = last_state['park_status']
         self.get_location().items = last_state['loc_items']
 
         print("Undo successful! Returned to the previous state.")
@@ -207,7 +205,8 @@ class AdventureGame:
     def check_win(self, player: Player) -> bool:
         """Check if the player satisfies the condition to win"""
         essentials = [self._items[5], self._items[7]]
-        if (self._items[3] in player.inventory or self._items[4] in player.inventory) and all(item in player.inventory for item in essentials):
+        if (self._items[3] in player.inventory or self._items[4] in player.inventory) and all(
+                item in player.inventory for item in essentials):
             return True
         return False
 
@@ -220,7 +219,7 @@ class AdventureGame:
         - Returns 1 if solved within three attempts, otherwise 0.
         """
 
-        def check_answer():
+        def check_answer() -> None:
             """Check the user's answer and update the result."""
             nonlocal attempts
             user_answer = entry.get().strip().lower()
@@ -278,9 +277,9 @@ class AdventureGame:
         # Ensure an integer is always returned
         return self.puzzle_result if self.puzzle_result is not None else 0
 
-    def park_conversation(self, player: Player) -> int:
+    def park_conversation(self, player_f: Player, image_path: str) -> int:
         """The function for interactions with Park"""
-        if player.park_status:
+        if player_f.park_status:
             print("Park has finished his mission, check somewhere else :)\n")
             return 3
         else:
@@ -330,13 +329,13 @@ class AdventureGame:
             print(park2[choice2])
             print('\n')
             # time.sleep(1.5)
-            correct_or_not = self.park_puzzle(self._pic_path, '3')
+            correct_or_not = self.park_puzzle(image_path, '3')
             while correct_or_not == 0:
                 print("HAHA LOSSSSERRRRR you can't even finish the high school question. Try next time. LLLLL\n")
                 print("Try again?\n")
                 again = input("Enter Y for yes, N for no: ").upper().strip()
                 if again == 'Y':
-                    correct_or_not = self.park_puzzle(self._pic_path, '3')
+                    correct_or_not = self.park_puzzle(image_path, '3')
                 else:
                     correct_or_not = 2
             return correct_or_not
@@ -347,11 +346,13 @@ if __name__ == "__main__":
     # When you are ready to check your work with python_ta, uncomment the following lines.
     # (Delete the "#" and space before each line.)
     # IMPORTANT: keep this code indented inside the "if __name__ == '__main__'" block
-    # import python_ta
-    # python_ta.check_all(config={
-    #     'max-line-length': 120,
-    #     'disable': ['R1705', 'E9998', 'E9999']
-    # })
+    import python_ta
+
+    python_ta.check_all(config={
+        'max-line-length': 120,
+        'disable': ['R1705', 'E9998', 'E9999']
+    })
+
     LOCATION_INDEX = 10
     INTER_ITEM_INDEX = 20
     INTER_NPC_INDEX = 30
@@ -449,6 +450,8 @@ if __name__ == "__main__":
             elif result <= 20:
                 if result == 11:
                     game.save_state(player)
+                    path: str = ('/Users/yaires/Documents/University Of Toronto/2025 '
+                                 'Winter/csc111/assignments/starter/project1/Euclid_Pic.png')
                     get_mug = game.park_conversation(player)
                     if get_mug == 1:
                         game.equip(player, 'lucky mug')
@@ -470,6 +473,3 @@ if __name__ == "__main__":
                         item_chosen = input('Enter the products item to check: ').strip()
                         if item_chosen != '0':
                             game.interact_items(player, int(item_chosen))
-
-
-
