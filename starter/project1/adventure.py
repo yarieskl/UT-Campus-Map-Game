@@ -19,7 +19,7 @@ This file is Copyright (c) 2025 CSC111 Teaching Team
 """
 from __future__ import annotations
 import json
-from typing import Optional
+from typing import Any, Optional
 import time
 
 import tkinter as tk
@@ -51,13 +51,15 @@ class AdventureGame:
     #   - _locations: a mapping from location id to Location object.
     #                       This represents all the locations in the game.
     #   - _items: a list of Item objects, representing all items in the game.
+    #   - _history: a list of dictionaries, saving all the chagnes made.
 
     _locations: dict[int, Location]
     _items: list[Item]
     _pic_path: str = ('/Users/yaires/Documents/University Of Toronto/2025 '
                       'Winter/csc111/assignments/starter/project1/Euclid_Pic.png')
+    _history: list[dict[str, Any]]
     current_location_id: int  # Suggested attribute, can be removed
-    moves_left: int = 50
+    moves_left: int = 40
     ongoing: bool  # Suggested attribute, can be removed
 
     def __init__(self, game_data_file: str, initial_location_id: int) -> None:
@@ -79,6 +81,7 @@ class AdventureGame:
 
         # Suggested helper method (you can remove and load these differently if you wish to do so):
         self._locations, self._items = self._load_game_data(game_data_file)
+        self._history = []
 
         # Suggested attributes (you can remove and track these differently if you wish to do so):
         self.current_location_id = initial_location_id  # game begins at this location
@@ -122,10 +125,38 @@ class AdventureGame:
         else:
             return self._locations[loc_id]
 
-    def undo(self, game_log: EventList) -> None:
-        """Undo command in the game."""
+    def save_state(self, player: Player):
+        """Save the current state of the game before making changes."""
+        state_snapshot = {
+            'location': self.current_location_id,
+            'inventory': player.inventory.copy(),  # Copy inventory to avoid reference issues
+            'score': player.score,
+            'moves_left': self.moves_left,
+            'park_status': player.park_status,
+            'loc_items': self.get_location().items.copy()
+        }
+        self._history.append(state_snapshot)
 
-    def get_item(self, item_to_get: str):
+    def undo(self, player: Player) -> None:
+        """Undo command in the game."""
+        if not self._history:
+            print("Nothing to undo!")
+            return
+
+            # Retrieve the last saved state
+        last_state = self._history.pop()
+
+        # Restore game state
+        self.current_location_id = last_state['location']
+        player.inventory = last_state['inventory']
+        player.score = last_state['score']
+        self.moves_left = last_state['moves_left']
+        player.park_status = last_state['park_status']
+        self.get_location().items = last_state['loc_items']
+
+        print("Undo successful! Returned to the previous state.")
+
+    def get_item(self, item_to_get: str) -> Item:
         """Return the item that has the same name"""
         for i in self._items:
             if i.name == item_to_get:
@@ -133,15 +164,33 @@ class AdventureGame:
 
     def equip(self, player_f: Player, item_name: str) -> None:
         """Add selected item to player's inventory"""
+        self.save_state(player_f)
         item_f = game.get_item(item_name)
-        player_f.inventory.append(item_f)
+        player_f.equip(item_f)
         player_f.score += item_f.target_points
         self.get_location().items.remove(item_name)
 
-    def check_item(self) -> list[str]:
+    def check_item(self) -> None:
         """Return a list of items in the current location"""
         curr_loc = self.get_location()
-        return curr_loc.items
+        index = 1
+        for item in curr_loc.items:
+            print(index, ') ', item)
+            index += 1
+
+    def interact_items(self, player_f: Player, item_chose: int) -> None:
+        """Show the information and interaction options"""
+        curr_loc = self.get_location()
+        product_name = curr_loc.items[item_chose - 1]
+        product = [p for p in self._items if p.name == product_name][0]
+        print(product_name, product.description)
+        print("0) cancel\n1) purchase/equip\n")
+        purchase_status = input("Enter operation number: ").strip()
+        self.save_state(player_f)
+        if purchase_status == '0':
+            return
+        else:
+            self.equip(player_f, product_name)
 
     def move_left(self, prev_id: int) -> None:
         """Return the number of moves left"""
@@ -155,6 +204,14 @@ class AdventureGame:
             move = (abs(self.get_location(result).move_index - self.get_location(prev_id).move_index))
         self.moves_left -= move
 
+    def check_win(self, player: Player) -> bool:
+        """Check if the player satisfies the condition to win"""
+        essentials = [self._items[5], self._items[7]]
+        if (self._items[3] in player.inventory or self._items[4] in player.inventory) and all(item in player.inventory for item in essentials):
+            return True
+        return False
+
+    # cite from ChatGPT
     def park_puzzle(self, image_path: str, correct_answer: str) -> int:
         """
         Displays an image puzzle where the user has three attempts to answer correctly.
@@ -366,15 +423,7 @@ if __name__ == "__main__":
                 print("Your current score is: ", player.score)
                 print("========")
             elif choice == 'undo':
-                if game_log.__len__() > 1:
-                    game_log.remove_last_event()
-                    location = game_log.last
-                    game.current_location_id = location.id_num
-                    print("Last Even has been removed")
-                    print("========\n")
-                else:
-                    print("Can't undo. This is your starting location.")
-                    print("========\n")
+                game.undo(player)
             elif choice == 'quit':
                 print('Thank you for playing!! C U next time!!')
                 exit()
@@ -386,25 +435,41 @@ if __name__ == "__main__":
             # TODO: Add in code to deal with actions which do not change the location (e.g. taking or using an item)
             # TODO: Add in code to deal with special locations (e.g. puzzles) as needed for your game
             if result <= 10:
+                if result == 7:
+                    if game.check_win(player):
+                        print("Congrats!\nYour score is ", player.score)
+                        game.ongoing = False
+                game.save_state(player)
                 prev_loc_id = game.current_location_id
                 game.current_location_id = result
                 game.move_left(prev_loc_id)
+                if game.moves_left < 0:
+                    game.ongoing = False
 
             elif result <= 20:
                 if result == 11:
+                    game.save_state(player)
                     get_mug = game.park_conversation(player)
                     if get_mug == 1:
                         game.equip(player, 'lucky mug')
                         player.park_status = True
                         print("Smart!! Park appreciated you and gave you your precoius lucky mug!! (ﾉ◕ヮ◕)ﾉ:･ﾟ✧*\n")
                     elif get_mug == 0:
-                        print("HAHA LOSSSSERRRRR you can't even finish the high school question. Try next time. LLLLL")
+                        print("Since you couldn't help park with his math problem, he looked at you "
+                              "disppointedly...withou giving the mug to you...")
                     elif get_mug == 2:
                         print(get_mug)
                         print("You thought you weren't in a good mood to answer the question. You want to have a good "
                               "rest and then try again later...\n")
-            elif result <= 30:
+            elif result <= 40:
                 if result < 33:
-                    print(game.check_item())
+                    item_chosen = ''
+                    while item_chosen != '0':
+                        game.check_item()
+                        print("0) Back")
+                        item_chosen = input('Enter the products item to check: ').strip()
+                        if item_chosen != '0':
+                            game.interact_items(player, int(item_chosen))
+
 
 
